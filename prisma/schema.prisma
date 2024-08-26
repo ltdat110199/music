@@ -1,0 +1,57 @@
+// prisma/schema.prisma
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        Int        @id @default(autoincrement())
+  fullname  String
+  avatar    String
+  email     String     @unique
+  password  String
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  songs     Song[]
+  Favorite  Favorite[]
+}
+
+model Song {
+  id           Int        @id @default(autoincrement())
+  artist       String
+  duration     Int
+  path         String
+  song_name    String
+  thumnail_url String
+  idAlbum      Int
+  album        Album      @relation(fields: [idAlbum], references: [id])
+  User         User?      @relation(fields: [userId], references: [id])
+  userId       Int?
+  Favorite     Favorite[]
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+model Album {
+  id           Int      @id @default(autoincrement())
+  thumnail_url String
+  album_name   String
+  description  String?
+  songs        Song[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Favorite {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  songId    Int
+  song      Song     @relation(fields: [songId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
